@@ -70,7 +70,7 @@
         function contectar() {
             var direccionServidor = document.getElementById("servidor").value;
 
-            servidor = new WebSocket("wss://"+direccionServidor+":10000");
+            servidor = new WebSocket("wss://"+direccionServidor);
 
             servidor.onmessage=recibirMensaje;
 
