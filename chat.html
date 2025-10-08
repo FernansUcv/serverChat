@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi chat</title>
+
+    <style>
+        .casilla {
+            border: 1px solid red;
+            margin: 0px;
+            width: 50px;
+        }
+        .tablero {
+            border: 5px solid green;
+            width: 156px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat</h1>
+
+    Servidor:
+    <div>
+        <input id="servidor" value="localhost">
+        <button onclick="contectar()">Conectar</button>
+    </div>
+
+    <div id="zonaChat">
+        Caja Mensajes:
+        <div>  
+            <textarea id="conversacion" rows="10"></textarea>
+        </div>
+        Tu mensaje: 
+        <div>
+            <input id="txtmensaje">
+            <button onclick="enviarMensaje()" >Enviar</button>
+        </div>
+    </div>
+
+    Tablero:
+    <div class="tablero">
+        <div>
+            <img id="1" class="casilla" src="images/vacio.png" ><img id="2" class="casilla" src="images/vacio.png" ><img id="3" class="casilla" src="images/vacio.png" >
+        </div>
+        <div>
+            <span id="4" class="casilla">O</span><span id="5" class="casilla">O</span><span id="6" class="casilla">O</span>
+        </div>
+        <div>
+            <span id="7" class="casilla">X</span><span id="8" class="casilla">X</span><span id="9" class="casilla">X</span>
+        </div>
+    </div>
+
+</body>
+    
+    <script>
+        // incialmente esconder el chat, hasta que me conecte
+        var zonaChat = document.getElementById("zonaChat");
+        zonaChat.style="visibility: hidden";
+
+        var casilla1=document.getElementById("1");
+        casilla1.addEventListener("click", ()=>{
+             alert("Me has pulsado");
+             casilla1.src="images/X.png";
+        } )
+
+        // CONECTAR
+        var servidor=null;
+
+        function contectar() {
+            var direccionServidor = document.getElementById("servidor").value;
+
+            servidor = new WebSocket("ws://"+direccionServidor+":8080");
+
+            servidor.onmessage=recibirMensaje;
+
+            zonaChat.style="visibility: visible";
+        }
+
+        // ENVIAR MENSAJES
+        function comprobarEnter(ev) {
+            if (ev.key=="Enter") enviarMensaje();
+            //alert("Tecla pulsada "+ev.key);
+        }
+        document.getElementById("txtmensaje").addEventListener("keydown", comprobarEnter);
+
+        function enviarMensaje() {
+            var cajaMensaje = document.getElementById("txtmensaje");  
+            
+            var paquete = {
+                mensaje: cajaMensaje.value,
+                hora: Date.now()
+            }
+
+            servidor.send(  JSON.stringify(paquete) );
+
+            cajaMensaje.value="";
+            cajaMensaje.focus();
+        }
+
+        // RECIBIR MENSAJES
+        function recibirMensaje(mensaje) {
+            var cajaConversacion = document.getElementById("conversacion");
+            
+            var paquete=JSON.parse(mensaje.data.toString());
+
+            cajaConversacion.value += `(${paquete.hora}) ${paquete.mensaje}\n`;
+        }
+
+    </script>    
+
+</html>
