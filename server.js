@@ -1,10 +1,10 @@
 const WebSocket = require("ws");
 
 // crear el servidor (iniciarlo)
-var miservidor = new WebSocket.Server( {port:8080}, 
+var miservidor = new WebSocket.Server( {port:10000}, 
     // cuando se inicie... saluda
     ()=>{
-       console.log("Servidor iniciado en el puerto 8080");
+       console.log("Servidor iniciado en el puerto 10000");
     }
  );
 
